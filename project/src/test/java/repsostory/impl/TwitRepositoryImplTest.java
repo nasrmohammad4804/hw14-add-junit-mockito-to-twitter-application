@@ -6,6 +6,9 @@ import domain.embeddable.Profile;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assumptions.*;
+
 import service.impl.TwitServiceImpl;
 import service.impl.UserServiceImpl;
 
@@ -78,15 +81,19 @@ class TwitRepositoryImplTest {
     @Test
     void countOfTwitsOfUser() {
 
-        assertEquals(BigInteger.valueOf(2L), twitRepository.countOfTwitsOfUser(user.getId()));
-        assertEquals(BigInteger.valueOf(0), twitRepository.countOfTwitsOfUser(-4L));
-        assertEquals(BigInteger.valueOf(0), twitRepository.countOfTwitsOfUser(0L));
+        assertAll("twitCount",
+                () -> assertEquals(BigInteger.valueOf(2L), twitRepository.countOfTwitsOfUser(user.getId())),
+                () -> assertEquals(BigInteger.valueOf(0), twitRepository.countOfTwitsOfUser(-4L)),
+                () -> assertEquals(BigInteger.valueOf(0), twitRepository.countOfTwitsOfUser(0L)));
+
     }
 
     @Test
     void findById() {
-        assertEquals(Optional.empty(), twitRepository.findById(0L));
-        assertEquals(Optional.empty(), twitRepository.findById(-2L));
+
+        assertAll("findByTwitById",
+                () -> assertEquals(Optional.empty(), twitRepository.findById(0L)),
+                () -> assertEquals(Optional.empty(), twitRepository.findById(-2L)));
 
 
     }
