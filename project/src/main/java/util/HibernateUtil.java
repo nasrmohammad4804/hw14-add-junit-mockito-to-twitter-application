@@ -19,7 +19,7 @@ public final class HibernateUtil {
     public static EntityManagerFactory getEntityManagerTestFactory() {
 
         if(entityManagerTestFactory==null)
-            entityManagerFactory=Persistence.createEntityManagerFactory("myTest");
+            entityManagerTestFactory=Persistence.createEntityManagerFactory("myTest");
 
         return entityManagerTestFactory;
     }
