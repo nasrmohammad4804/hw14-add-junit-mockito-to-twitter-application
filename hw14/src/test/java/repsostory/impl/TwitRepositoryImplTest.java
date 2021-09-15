@@ -6,11 +6,14 @@ import domain.embeddable.Profile;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import service.impl.TwitServiceImpl;
+import service.impl.UserServiceImpl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,6 +25,8 @@ class TwitRepositoryImplTest {
     private static User user;
     private static Twit twit1;
     private static Twit twit2;
+    private static TwitServiceImpl twitService;
+    private static UserServiceImpl userService;
 
     @BeforeAll
     public static void start() {
@@ -30,18 +35,35 @@ class TwitRepositoryImplTest {
                 .createEntityManager();
         twitRepository = new TwitRepositoryImpl(entityManager);
 
+        userService = new UserServiceImpl(new UserRepositoryImpl(entityManager));
+
+        twitService = new TwitServiceImpl(twitRepository);
+
         user = new User.UserBuilder("mahsa5671", "13994359").
                 getBirthDay(LocalDate.parse("2001-02-13")).getProfile(
                 new Profile("mahsa", "noori", "1273214997")).build();
 
+
         twit1 = new Twit("i decide make cake", user);
         twit2 = new Twit("i went to travel russia", user);
-        twitRepository.save(twit1);
-        twitRepository.save(twit2);
+
+        twit1.setUser(user);
+        twit2.setUser(user);
+        user.getTwits().add(twit1);
+        user.getTwits().add(twit2);
+
+        userService.save(user);
+        entityManager.refresh(user);
     }
 
     @AfterAll
     public static void end() {
+
+        entityManager.getTransaction().begin();
+        entityManager.remove(twit1);
+        entityManager.remove(twit2);
+        entityManager.remove(user);
+        entityManager.getTransaction().commit();
 
         entityManager.close();
     }
@@ -49,26 +71,25 @@ class TwitRepositoryImplTest {
     @Test
     void delete() {
 
-        twitRepository.delete(twit1);
+        twitService.delete(twit1);
         assertTrue(twit1.getDeleted());
 
-        twit1.setDeleted(false);
     }
-
 
     @Test
     void countOfTwitsOfUser() {
 
         assertEquals(BigInteger.valueOf(2L), twitRepository.countOfTwitsOfUser(user.getId()));
-        assertEquals(BigInteger.valueOf(0), twitRepository.countOfTwitsOfUser(100L));
         assertEquals(BigInteger.valueOf(0), twitRepository.countOfTwitsOfUser(-4L));
         assertEquals(BigInteger.valueOf(0), twitRepository.countOfTwitsOfUser(0L));
     }
 
     @Test
     void findById() {
-        assertEquals(twit1, twitRepository.findById(1L).get());
-        assertEquals(twit2, twitRepository.findById(2L).get());
+        assertEquals(Optional.empty(), twitRepository.findById(0L));
+        assertEquals(Optional.empty(), twitRepository.findById(-2L));
+
+
     }
 
 }

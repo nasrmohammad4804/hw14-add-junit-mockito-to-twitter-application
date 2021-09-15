@@ -5,6 +5,7 @@ import domain.embeddable.Profile;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import service.impl.UserServiceImpl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -15,49 +16,56 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserRepositoryImplTest {
 
-    private static final User user = new User.UserBuilder("ali_akbari", "123456").
+    private static final User user = new User.UserBuilder("alk1507", "123456").
             getBirthDay(LocalDate.parse("1990-05-23")).getProfile(
             new Profile("ali", "akbari", "1287862345")).build();
 
     private static final EntityManager entityManager = Persistence.createEntityManagerFactory("myTest")
             .createEntityManager();
+
     private static final UserRepositoryImpl userRepository = new UserRepositoryImpl(entityManager);
+    private static final UserServiceImpl userService = new UserServiceImpl(userRepository);
 
     @BeforeAll
     static void firstInitializeUser() {
-        userRepository.save(user);
+
+        userService.save(user);
+
+        System.out.println("saved !!!");
     }
+
 
     @Test
     void delete() {
-        userRepository.delete(user);
+        userService.delete(user);
         assertTrue(user.getDeleted());
-        backToUndelete();
+
     }
 
     @Test
     void findByUserName() {
 
-        assertEquals(user, userRepository.findByUserName("ali_akbari").get());
+        assertEquals(user, userService.findByUserName("alk1507").get());
+
     }
 
     @Test
     void findByUserNameForRecovery() {
-        userRepository.delete(user);
-        assertEquals(user, userRepository.findByUserNameForRecovery("ali_akbari", "123456").get());
+        userService.delete(user);
+        assertEquals(user, userRepository.findByUserNameForRecovery("alk1507", "123456").get());
 
-        backToUndelete();
-    }
-
-    public void backToUndelete() {
-        user.setDeleted(false);
-        userRepository.update(user);
 
     }
 
     @AfterAll
     public static void end() {
 
+        entityManager.getTransaction().begin();
+        entityManager.remove(user);
+        entityManager.getTransaction().commit();
+
         entityManager.close();
     }
+
+
 }

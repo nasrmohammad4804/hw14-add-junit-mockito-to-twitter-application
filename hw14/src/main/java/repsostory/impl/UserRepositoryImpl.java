@@ -17,10 +17,12 @@ public class UserRepositoryImpl extends BaseRepositoryImpl<User, Long>
 
     @Override
     public void delete(User user) {
+
         entityManager.getTransaction().begin();
         user.setDeleted(true);
-        update(user);
         entityManager.getTransaction().commit();
+
+
     }
 
     @Override

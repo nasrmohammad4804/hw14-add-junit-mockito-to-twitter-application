@@ -116,7 +116,7 @@ public class User extends BaseEntity<Long> {
         private Profile profile;
 
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-        private List<Twit> twits;
+        private List<Twit> twits=new ArrayList<>();
 
         public UserBuilder(String userName, String password) {
 
