@@ -2,55 +2,57 @@ package repsostory.impl;
 
 import domain.User;
 import domain.embeddable.Profile;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import service.impl.UserServiceImpl;
+import org.junit.jupiter.api.*;
+import util.HibernateUtil;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Disabled()
 class UserRepositoryImplTest {
 
     private static final User user = new User.UserBuilder("alk1507", "123456").
             getBirthDay(LocalDate.parse("1990-05-23")).getProfile(
             new Profile("ali", "akbari", "1287862345")).build();
 
-    private static final EntityManager entityManager = Persistence.createEntityManagerFactory("myTest")
+    private static final EntityManager entityManager = HibernateUtil.getEntityManagerTestFactory()
             .createEntityManager();
 
     private static final UserRepositoryImpl userRepository = new UserRepositoryImpl(entityManager);
-    private static final UserServiceImpl userService = new UserServiceImpl(userRepository);
 
     @BeforeAll
     static void firstInitializeUser() {
 
-        userService.save(user);
+        entityManager.getTransaction().begin();
+        userRepository.save(user);
+        entityManager.getTransaction().commit();
 
         System.out.println("saved !!!");
+
     }
 
 
     @Test
     void delete() {
-        userService.delete(user);
+        userRepository.delete(user);
         assertTrue(user.getDeleted());
 
     }
 
     @Test
+    @DisplayName(value = "test for find by userName")
     void findByUserName() {
 
-        assertEquals(user, userService.findByUserName("alk1507").get());
+        assertEquals(user, userRepository.findByUserName("alk1507").get());
 
     }
 
     @Test
     void findByUserNameForRecovery() {
-        userService.delete(user);
+        userRepository.delete(user);
         assertEquals(user, userRepository.findByUserNameForRecovery("alk1507", "123456").get());
 
 

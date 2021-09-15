@@ -7,11 +7,20 @@ public final class HibernateUtil {
 
     private static EntityManagerFactory entityManagerFactory;
 
+    private static EntityManagerFactory entityManagerTestFactory;
 
     public static EntityManagerFactory getEntityManagerFactory() {
         if (entityManagerFactory == null)
             entityManagerFactory = Persistence.createEntityManagerFactory("default");
 
         return entityManagerFactory;
+    }
+
+    public static EntityManagerFactory getEntityManagerTestFactory() {
+
+        if(entityManagerTestFactory==null)
+            entityManagerFactory=Persistence.createEntityManagerFactory("myTest");
+
+        return entityManagerTestFactory;
     }
 }

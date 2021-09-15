@@ -6,14 +6,9 @@ import domain.embeddable.Profile;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assumptions.*;
-
-import service.impl.TwitServiceImpl;
-import service.impl.UserServiceImpl;
+import util.HibernateUtil;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -24,22 +19,20 @@ class TwitRepositoryImplTest {
 
     private static EntityManager entityManager;
     private static TwitRepositoryImpl twitRepository;
+    private static UserRepositoryImpl userRepository;
     private static User user;
     private static Twit twit1;
     private static Twit twit2;
-    private static TwitServiceImpl twitService;
-    private static UserServiceImpl userService;
+
 
     @BeforeAll
     public static void start() {
 
-        entityManager = Persistence.createEntityManagerFactory("myTest")
+        entityManager = HibernateUtil.getEntityManagerTestFactory()
                 .createEntityManager();
         twitRepository = new TwitRepositoryImpl(entityManager);
+        userRepository =new UserRepositoryImpl(entityManager);
 
-        userService = new UserServiceImpl(new UserRepositoryImpl(entityManager));
-
-        twitService = new TwitServiceImpl(twitRepository);
 
         user = new User.UserBuilder("mahsa5671", "13994359").
                 getBirthDay(LocalDate.parse("2001-02-13")).getProfile(
@@ -54,7 +47,9 @@ class TwitRepositoryImplTest {
         user.getTwits().add(twit1);
         user.getTwits().add(twit2);
 
-        userService.save(user);
+        entityManager.getTransaction().begin();
+        userRepository.save(user);
+        entityManager.getTransaction().commit();
         entityManager.refresh(user);
     }
 
@@ -73,7 +68,7 @@ class TwitRepositoryImplTest {
     @Test
     void delete() {
 
-        twitService.delete(twit1);
+        twitRepository.delete(twit1);
         assertTrue(twit1.getDeleted());
 
     }
