@@ -63,8 +63,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
         System.out.println("enter nationalCode");
         String nationalCode = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
 
-        User user = new User.UserBuilder(userName, password).getBirthDay(birthDay)
-                .getProfile(new Profile(name, family, nationalCode)).build();
+        User user = User.builder().userName(userName).password(password).birthDay(birthDay)
+                .profile(new Profile(name, family, nationalCode)).build();
 
         super.save(user);
         entityManager.refresh(user);
