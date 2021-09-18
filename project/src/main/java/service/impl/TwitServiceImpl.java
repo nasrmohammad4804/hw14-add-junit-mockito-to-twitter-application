@@ -12,6 +12,7 @@ import util.ApplicationContext;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -44,8 +45,10 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
     @Override
     public void addComments(Twit twit, User user) {
 
+         Scanner scanner=new Scanner(System.in);
+
         System.out.println("enter your comment");
-        String comment = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+        String comment = scanner.nextLine();
 
         twit.getComments().add(new Twit(comment, user));
         super.update(twit);
@@ -80,12 +83,12 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
 
         System.out.println("your state changed to  " + twitLikeAtomicReference.get().getState() + "\n");
         super.update(twit);
-
         entityManager.refresh(twit);
     }
 
     @Override
     public void updateComment(User user, Twit twit) {
+        Scanner scanner=new Scanner(System.in);
 
         List<Twit> comments = getCommentOfUserForUpdate(user, twit);
 
@@ -95,7 +98,7 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
         comments.forEach(x -> {
             System.out.println("your already comment is:\n" + x.getContext());
             System.out.println("enter new comment");
-            String newComment = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+            String newComment = scanner.nextLine();
             x.setContext(newComment);
         });
 

@@ -14,17 +14,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Disabled()
 class UserRepositoryImplTest {
 
-    private static final User user = new User.UserBuilder("alk1507", "123456").
-            getBirthDay(LocalDate.parse("1990-05-23")).getProfile(
-            new Profile("ali", "akbari", "1287862345")).build();
+    private static final User user = User.builder().userName("mahsa5671").password("13994359").
+            birthDay(LocalDate.parse("2001-02-13")).
+            profile(new Profile("mahsa", "noori", "1273214997")).build();
 
     private static final EntityManager entityManager = HibernateUtil.getEntityManagerTestFactory()
             .createEntityManager();
 
     private static final UserRepositoryImpl userRepository = new UserRepositoryImpl(entityManager);
 
+    private static User myUser;
+
     @BeforeAll
     static void firstInitializeUser() {
+
 
         entityManager.getTransaction().begin();
         userRepository.save(user);

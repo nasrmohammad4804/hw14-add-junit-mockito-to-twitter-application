@@ -13,6 +13,7 @@ import util.ApplicationContext;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryImpl>
         implements UserService {
@@ -28,6 +29,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
 
         twitService = ApplicationContext.getApplicationContext().getTwitService();
     }
+    public void setTwitServiceForTest(TwitServiceImpl twitService){
+        this.twitService=twitService;
+    }
 
     @Override
     public void delete(User element) {
@@ -37,10 +41,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
     @Override
     public Optional<User> register() {
 
-        Optional<User> optional = Optional.empty();
+        Scanner scanner = new Scanner(System.in);
 
+        Optional<User> optional = Optional.empty();
         System.out.println("enter userName ..");
-        String userName = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+        String userName = scanner.nextLine();
 
         if (repository.findByUserName(userName).isPresent()) {
             System.out.println("this userName already exist !!!");
@@ -48,20 +53,20 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
         }
 
         System.out.println("enter password");
-        String password = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+        String password = scanner.nextLine();
 
         System.out.println("enter firstName");
-        String name = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+        String name = scanner.nextLine();
         System.out.println("enter lastName");
-        String family = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+        String family = scanner.nextLine();
 
         System.out.println("enter birthDay");
         LocalDate birthDay = LocalDate.parse(
-                ApplicationContext.getApplicationContext().getScannerForString().nextLine()
+                scanner.nextLine()
         );
 
         System.out.println("enter nationalCode");
-        String nationalCode = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+        String nationalCode = scanner.nextLine();
 
         User user = User.builder().userName(userName).password(password).birthDay(birthDay)
                 .profile(new Profile(name, family, nationalCode)).build();
@@ -80,9 +85,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
 
     @Override
     public Optional<User> login() {
+        Scanner scanner = new Scanner(System.in);
+
         Optional<User> optional = Optional.empty();
         System.out.println("enter userName");
-        String userName = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+
+        String userName = scanner.nextLine();
 
         Optional<User> userOptional = repository.findByUserName(userName);
 
@@ -93,7 +101,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
         }
 
         System.out.println("enter your password");
-        String password = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+        String password = scanner.nextLine();
 
         if (!userOptional.get().getPassword().equals(password)) {
             System.out.println("password is wrong");
@@ -106,9 +114,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
     @Override
     public void addTwit(User user) {
 
+        Scanner scanner = new Scanner(System.in);
+
         entityManager.getTransaction().begin();
         System.out.println("enter your context of twit");
-        String context = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+        String context = scanner.nextLine();
 
         Twit twit = new Twit(context, user);
         user.getTwits().add(twit);
@@ -120,35 +130,37 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
 
     @Override
     public void changeProfile(User user) {
+
+        Scanner scanner = new Scanner(System.in);
         System.out.println("1.change base name");
         System.out.println("2.change base family");
         System.out.println("3.change base password");
 
-        switch (ApplicationContext.getApplicationContext().getScannerForInteger().nextInt()) {
+        switch (Integer.parseInt(scanner.nextLine())) {
 
             case 1 -> {
                 System.out.println("enter newName");
-                String name = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+                String name = scanner.nextLine();
                 user.getProfile().setFirstName(name);
                 super.update(user);
 
             }
             case 2 -> {
                 System.out.println("enter newLastName");
-                String family = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+                String family = scanner.nextLine();
                 user.getProfile().setLastName(family);
                 super.update(user);
             }
             case 3 -> {
                 System.out.println("enter old password ");
-                String oldPassword = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+                String oldPassword = scanner.nextLine();
 
                 if (!user.getPassword().equals(oldPassword)) {
                     System.out.println("password is wrong ... try again");
                     changeProfile(user);
                 }
                 System.out.println("enter newPassword");
-                String newPassword = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+                String newPassword = scanner.nextLine();
                 user.setPassword(newPassword);
                 super.update(user);
             }
@@ -163,11 +175,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
 
     @Override
     public void recovery() {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("enter userName for recovery");
-        String userName = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+        String userName = scanner.nextLine();
 
         System.out.println("enter password for recovery");
-        String password = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+        String password = scanner.nextLine();
 
         Optional<User> userOptional = repository.findByUserNameForRecovery(userName, password);
 
@@ -266,13 +279,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
     }
 
     private void operationOnAnotherTwit(User user, User anotherUser, Twit twit) {
+        Scanner scanner=new Scanner(System.in);
         System.out.println("1.show comment of  twit");
         System.out.println("2.like or dislike twit");
         System.out.println("3.add comment to this twit");
         System.out.println("4.update comment");
         System.out.println("5.delete comment");
         System.out.println("6. back ");
-        switch (ApplicationContext.getApplicationContext().getScannerForInteger().nextInt()) {
+        switch (scanner.nextInt()) {
 
             case 1 -> {
                 if (twit.getComments().isEmpty())

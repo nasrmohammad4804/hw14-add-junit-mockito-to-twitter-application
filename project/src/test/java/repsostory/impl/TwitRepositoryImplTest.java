@@ -31,13 +31,12 @@ class TwitRepositoryImplTest {
         entityManager = HibernateUtil.getEntityManagerTestFactory()
                 .createEntityManager();
         twitRepository = new TwitRepositoryImpl(entityManager);
-        userRepository =new UserRepositoryImpl(entityManager);
+        userRepository = new UserRepositoryImpl(entityManager);
 
 
-        user = new User.UserBuilder("mahsa5671", "13994359").
-                getBirthDay(LocalDate.parse("2001-02-13")).getProfile(
-                new Profile("mahsa", "noori", "1273214997")).build();
-
+        user = User.builder().userName("mahsa5671").password("13994359").
+                birthDay(LocalDate.parse("2001-02-13")).
+                profile(new Profile("mahsa", "noori", "1273214997")).build();
 
         twit1 = new Twit("i decide make cake", user);
         twit2 = new Twit("i went to travel russia", user);
