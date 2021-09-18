@@ -45,10 +45,10 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
     @Override
     public void addComments(Twit twit, User user) {
 
-         Scanner scanner=new Scanner(System.in);
+
 
         System.out.println("enter your comment");
-        String comment = scanner.nextLine();
+        String comment = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
 
         twit.getComments().add(new Twit(comment, user));
         super.update(twit);

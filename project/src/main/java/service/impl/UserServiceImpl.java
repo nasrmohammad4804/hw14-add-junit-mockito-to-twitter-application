@@ -279,14 +279,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
     }
 
     private void operationOnAnotherTwit(User user, User anotherUser, Twit twit) {
-        Scanner scanner=new Scanner(System.in);
+
         System.out.println("1.show comment of  twit");
         System.out.println("2.like or dislike twit");
         System.out.println("3.add comment to this twit");
         System.out.println("4.update comment");
         System.out.println("5.delete comment");
         System.out.println("6. back ");
-        switch (scanner.nextInt()) {
+        switch (Integer.parseInt(ApplicationContext.getApplicationContext().getScannerForString().nextLine())) {
 
             case 1 -> {
                 if (twit.getComments().isEmpty())

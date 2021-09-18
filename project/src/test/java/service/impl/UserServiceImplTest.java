@@ -16,9 +16,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,7 +26,7 @@ class UserServiceImplTest {
 
     private static UserServiceImpl userService;
     private static UserRepositoryImpl userRepository;
-    private static TwitRepositoryImpl twitRepository; //twitRepository
+    private static TwitRepositoryImpl twitRepository;
     private static TwitServiceImpl twitService;
 
     private static User user;
@@ -57,8 +55,6 @@ class UserServiceImplTest {
         userService = new UserServiceImpl(userRepository);
 
         userService.setTwitServiceForTest(twitService);
-//        userService.initialize();
-
         user = User.builder().userName("fk1507").password("1111").birthDay(LocalDate.parse("1378-04-27")).
                 profile(new Profile("zahra", "akrami", "13125246")).build();
 
@@ -161,7 +157,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void Operation() {
+    public void OperationOfLikeTwit() {
         //test private method with reflection
         addTwit();  //only test for liking twit
 
@@ -186,6 +182,31 @@ class UserServiceImplTest {
             e.printStackTrace();
         }
     }
+    @Test
+    public  void operationOfAddComment(){
+        addTwit();
+        String operationAddComment= """
+                3
+                spring is good decide
+                """;
+        InputStream input=System.in;
+        System.setIn(new ByteArrayInputStream(operationAddComment.getBytes()));
+        try {
+            Method method = userService.getClass().
+                    getDeclaredMethod("operationOnAnotherTwit", User.class, User.class, Twit.class);
+            method.setAccessible(true);
 
+            assertTrue(user.getTwits().get(0).getComments().isEmpty());
 
+            assertThrows(InvocationTargetException.class, () -> {
+                method.invoke(userService, user, user, user.getTwits().get(0));
+            });
+
+            assertFalse(user.getTwits().get(0).getComments().isEmpty());
+            System.setIn(input);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
